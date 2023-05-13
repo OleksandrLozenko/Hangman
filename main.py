@@ -6,7 +6,7 @@ from buttons import *
 
 pygame.init()
 win = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Виселица 1.0")
+pygame.display.set_caption("Виселица 2.0")
 background_image = pygame.image.load("Images/background.png")
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 ###
