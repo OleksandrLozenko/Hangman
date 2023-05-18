@@ -50,3 +50,24 @@ setting_button_text_img.blit(setting_button_img, (0, 0))
 setting_button_img_rect = setting_button_img.get_rect(center=setting_button.center)
 setting_button_hovered_img_rect = setting_button_img_rect.inflate(0, 30)
 ###
+BUTTON_WIDTH = 200
+BUTTON_HEIGHT = 40
+
+# Определение размеров выпадающего списка
+DROPDOWN_WIDTH = BUTTON_WIDTH
+DROPDOWN_HEIGHT = BUTTON_HEIGHT * 3
+# Определение координат кнопки
+BUTTON_X = (WIDTH - BUTTON_WIDTH) // 2
+BUTTON_Y = (HEIGHT - BUTTON_HEIGHT - DROPDOWN_HEIGHT) // 2
+# Определение координат выпадающего списка
+DROPDOWN_X = BUTTON_X
+DROPDOWN_Y = BUTTON_Y + BUTTON_HEIGHT
+ITEMS = ['ИТ', 'ЕДА', 'ТРАНСПОРТ']
+
+# Флаг для отслеживания открытия/закрытия выпадающего списка
+dropdown_open = False
+
+# Индекс выбранного элемента
+selected_index = None
+
+
