@@ -15,10 +15,11 @@ TEXTBOX_HEIGHT = 40
 COlOR_ENCRYPTED_WORD = (0, 0, 0)
 
 # Слова
-WORDS = WORDS_RUS # Слова по умолчанию
+WORDS = WORDS_IT # Слова по умолчанию
 ALPHABET = ALPHABET_RUS # Буквы по умолчанию
 
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 GREEN = (0, 255, 0)
 RED = (255,0,0)
+
