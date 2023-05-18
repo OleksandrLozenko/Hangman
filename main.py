@@ -6,7 +6,7 @@ from buttons import *
 
 pygame.init()
 win = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Виселица 2.0")
+pygame.display.set_caption("Виселица 1.0")
 background_image = pygame.image.load("Images/background.png")
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 ###
@@ -54,31 +54,50 @@ for row in rows:
         buttons.append((button_rect, button_text))
         x += button_width + gap
 hang_man_count = 0
+
 def draw_buttons():
     ''' Функция для отображения кнопок на экране '''
     # Проходит по всем кнопкам и рисует их на экране
-    for button_rect, button_text in buttons:
-        pygame.draw.rect(win, WHITE, button_rect)
-        win.blit(button_text, button_text.get_rect(center=button_rect.center))
+    for i, (button_rect, button_text) in enumerate(buttons):
+        letter = ALPHABET[i]  # Получаем символ кнопки из алфавита
+        if letter in guessed_letters:
+            if letter in word:
+                pygame.draw.rect(win, GREEN, button_rect)
+            else:
+                pygame.draw.rect(win, RED, button_rect)
+        else:
+            pygame.draw.rect(win, WHITE, button_rect)
+        text_surface = font.render(letter, True, BLACK)
+        text_rect = text_surface.get_rect(center=button_rect.center)
+        win.blit(text_surface, text_rect)
+
 
 def handle_button_click(pos):
     ''' Функция для обработки нажатий кнопок на экране '''
     global hang_man_count
-    # Принимает координаты щелчка мыши на экране (pos)
     global current_letter, guessed_letters, no_word, remaining_attempts, buttons
+
     for i, (button_rect, button_text) in enumerate(buttons):
         # Если координаты щелчка находятся в пределах кнопки
         if button_rect.collidepoint(pos):
             current_letter = ALPHABET[i] # Получаем текущую букву, соответствующую этой кнопке
             if current_letter not in guessed_letters:
-                # Если текущая буква не присутствует в слове
+                guessed_letters.append(current_letter)
                 if current_letter not in word:
                     remaining_attempts -= 1
                     hang_man_count += 1
-                    guessed_letters.append(current_letter)
+                    button_text_color = RED
                 else:
-                    guessed_letters.append(current_letter)
-    draw_buttons()
+                    button_text_color = GREEN
+            else:
+                # Буква уже угадана
+                button_text_color = WHITE
+            
+            pygame.draw.rect(win, button_text_color, button_rect)
+            text_surface = font.render(ALPHABET[i], True, BLACK)
+            text_rect = text_surface.get_rect(center=button_rect.center)
+            win.blit(text_surface, text_rect)
+
 
 # Игровые переменные
 guessed_letters = [] # Угаданные буквы.
@@ -142,6 +161,7 @@ def get_new_word():
             hang_man_count = 0 # Попытки
             return word
 
+
 count_language = 'RUS'
 # Нарисовать текстовое поле для ввода
 #def draw_textbox():
@@ -188,19 +208,42 @@ def check_remaining_attempts():
         win.blit(exit_button_text_img, exit_button_hovered_img_rect)
         pygame.display.update()
         pygame.time.delay(1000)
- 
+def draw_dropdown():
+    pygame.draw.rect(win, WHITE, (DROPDOWN_X, DROPDOWN_Y, DROPDOWN_WIDTH, DROPDOWN_HEIGHT), 0)
+
+    for i, item in enumerate(ITEMS):
+        item_rect = pygame.Rect(DROPDOWN_X, DROPDOWN_Y + i * BUTTON_HEIGHT, DROPDOWN_WIDTH, BUTTON_HEIGHT)
+        pygame.draw.rect(win, WHITE, item_rect, 0)
+
+        item_text = pygame.font.SysFont(None, 24).render(item, True, BLACK)
+        item_text_rect = item_text.get_rect(center=item_rect.center)
+        win.blit(item_text, item_text_rect)
+
+# Функция отрисовки кнопки
+def draw_button():
+    pygame.draw.rect(win, RED, (BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT), 0)
+
+    if selected_index is not None:
+        button_text = pygame.font.SysFont(None, 24).render(ITEMS[selected_index], True, WHITE)
+    else:
+        button_text = pygame.font.SysFont(None, 24).render('Dropdown', True, WHITE)
+    
+    button_text_rect = button_text.get_rect(center=(BUTTON_X + BUTTON_WIDTH // 2, BUTTON_Y + BUTTON_HEIGHT // 2))
+    win.blit(button_text, button_text_rect) 
 def draw_screen():
     '''Функция отрисовки кнопок с языками'''
     if pygame.display.get_init():
-        win.blit(button_img, button_img_rect)
         win.blit(rus_button_text_img, rus_button_img_rect)
         win.blit(eng_button_text_img, eng_button_img_rect)
         win.blit(est_button_text_img, est_button_img_rect)
         pygame.display.update()
+def play():
+    win.blit(button_img, button_img_rect)
 def draw_settings():
     win.blit(setting_button_text_img,setting_button_img_rect)
 # Цикл меню
 game_running = False
+topic_selection = False
 menu_running = True
 setting_running = False
 while True:
@@ -224,20 +267,20 @@ while True:
                 quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if rus_button.collidepoint(event.pos):
-                    WORDS, ALPHABET = WORDS_RUS, ALPHABET_RUS
+                    ALPHABET =  ALPHABET_RUS
                     word = random.choice(WORDS)
                     count_language, menu_language, choose_language, remaining_tries = "RUS", 'Язык','Выберите язык', 'Попытки'
                 if eng_button.collidepoint(event.pos):
-                    WORDS, ALPHABET = WORDS_ENG, ALPHABET_ENG
+                    ALPHABET = ALPHABET_ENG
                     word = random.choice(WORDS)
                     count_language,menu_language,choose_language, remaining_tries = "ENG",'Language','Choose language', 'Attempts'
                 if est_button.collidepoint(event.pos):
-                    WORDS, ALPHABET = WORDS_EST, ALPHABET_EST
+                    ALPHABET = ALPHABET_EST
                     word = random.choice(WORDS)
                     count_language,menu_language,choose_language, remaining_tries = "EST",'Keel','Valige keel', 'Katsed'
                 if button.collidepoint(event.pos):
                     menu_running = False
-                    game_running = True
+                    topic_selection = True
                     current_letter = ""
                     guessed_letters = []
                     remaining_attempts = 8
@@ -249,6 +292,7 @@ while True:
             draw_screen()
             choose_your_language()
             language()
+            play()
             draw_settings()
             pygame.display.update()
 
@@ -315,3 +359,48 @@ while True:
                 pygame.quit()
                 quit()
         draw_settings()
+    if topic_selection:
+        topic = 0
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Левая кнопка мыши
+                    mouse_pos = pygame.mouse.get_pos()
+
+                    # Проверяем, нажали ли на кнопку
+                    if BUTTON_X <= mouse_pos[0] <= BUTTON_X + BUTTON_WIDTH and BUTTON_Y <= mouse_pos[1] <= BUTTON_Y + BUTTON_HEIGHT:
+                        # Переключаем флаг открытия/закрытия выпадающего списка
+                        dropdown_open = not dropdown_open
+                        # Проверяем, нажали ли внутри выпадающего списка
+                    elif dropdown_open and DROPDOWN_X <= mouse_pos[0] <= DROPDOWN_X + DROPDOWN_WIDTH and DROPDOWN_Y <= mouse_pos[1] <= DROPDOWN_Y + DROPDOWN_HEIGHT:
+                        # Определяем выбранный элемент
+                        selected_index = (mouse_pos[1] - DROPDOWN_Y) // BUTTON_HEIGHT
+                        if 0 <= selected_index < len(ITEMS):
+                            print('Выбран элемент:', ITEMS[selected_index])
+                            dropdown_open = False
+                            if ITEMS[selected_index] == 'ИТ':
+                                WORDS = WORDS_IT_UPPER[topic] if count_language == 'RUS' else WORDS_IT_UPPER[1] if count_language == 'ENG' else WORDS_IT_UPPER[2]
+                                print(WORDS)
+                            if ITEMS[selected_index] == 'ЕДА':
+                                WORDS = WORDS_FOOD_UPPER[topic] if count_language == 'RUS' else WORDS_FOOD_UPPER[1] if count_language == 'ENG' else WORDS_FOOD_UPPER[2]
+                                print(WORDS)
+                            if ITEMS[selected_index] == 'ТРАНСПОРТ':
+                                WORDS = WORDS_TRANSPORT_UPPER[topic] if count_language == 'RUS' else WORDS_TRANSPORT_UPPER[1] if count_language == 'ENG' else WORDS_TRANSPORT_UPPER[2]
+                                print(WORDS)
+
+                if button.collidepoint(event.pos):
+                    topic_selection = False
+                    game_running = True
+                    current_letter = ""
+                    guessed_letters = []
+                    remaining_attempts = 8
+                    hang_man_count = 0
+                    word = random.choice(WORDS)
+        win.blit(background_image, (0, 0))
+        draw_button()
+        play()
+        if dropdown_open:
+            draw_dropdown()
+        pygame.display.update()
