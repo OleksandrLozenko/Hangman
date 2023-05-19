@@ -24,7 +24,7 @@ hang_man = {0: pygame.image.load('Images/hangman.png'),
             5: pygame.image.load('Images/hangman5.png'),
             6 : pygame.image.load('Images/hangman6.png'),
             7 : pygame.image.load('Images/hangman7.png'),
-            8 : pygame.image.load('Images/hangman8.png'),
+            8 : pygame.image.load('Images/hangman8.png')
 }
 button_width, button_height = 50, 50
 gap = 10  # расстояние между кнопками
@@ -131,7 +131,7 @@ def draw_word():
         message_rect = message_surface.get_rect(center=(WIDTH/2, HEIGHT/2))
         pygame.draw.rect(message_surface, GREEN, message_surface.get_rect(), 5)
         message_font = pygame.font.SysFont(FONT_TEXT, 40)
-        message_text = message_font.render(f"Вы угадали!", True, GREEN)
+        message_text = message_font.render(game, True, GREEN)
         message_surface.blit(message_text, (message_surface.get_width()/2 - message_text.get_width()/2, message_surface.get_height()/2 - message_text.get_height()/2))
         win.blit(message_surface, message_rect)
         pygame.display.update()
@@ -146,7 +146,7 @@ def get_new_word():
         message_rect = message_surface.get_rect(center=(WIDTH/2, HEIGHT/2))
         pygame.draw.rect(message_surface, GREEN, message_surface.get_rect(), 5)
         message_font = pygame.font.SysFont(FONT_TEXT, 50)
-        message_text = message_font.render("Молодец!", True, GREEN)
+        message_text = message_font.render(victory, True, GREEN)
         message_surface.blit(message_text, (message_surface.get_width()/2 - message_text.get_width()/2, message_surface.get_height()/2 - message_text.get_height()/2))
         win.blit(message_surface, message_rect)
         pygame.display.update()
@@ -203,7 +203,7 @@ def check_remaining_attempts():
         message_rect = message_surface.get_rect(center=(WIDTH/2, HEIGHT/2))
         pygame.draw.rect(message_surface, RED, message_surface.get_rect(), 5)
         message_font = pygame.font.SysFont(FONT_TEXT, 50)
-        message_text = message_font.render("Вы проиграли!", True, RED)
+        message_text = message_font.render(game_over, True, RED)
         message_surface.blit(message_text, (message_surface.get_width()/2 - message_text.get_width()/2, message_surface.get_height()/2 - message_text.get_height()/2))
         win.blit(message_surface, message_rect)
         win.blit(again_button_text_img, again_button_hovered_img_rect)
@@ -277,16 +277,19 @@ while True:
                     word = random.choice(WORDS)
                     ITEMS = ['ИТ', 'ЕДА', 'ТРАНСПОРТ']
                     count_language, menu_language, choose_language, remaining_tries = "RUS", 'Язык','Выберите язык', 'Попытки'
+                    game,game_over,victory = 'Вы угадали!','Вы проиграли!','Молодец!'
                 if eng_button.collidepoint(event.pos):
                     ALPHABET = ALPHABET_ENG
                     word = random.choice(WORDS)
                     ITEMS = ['IT','FOOD','TRANSPORT']
                     count_language,menu_language,choose_language, remaining_tries = "ENG",'Language','Choose language', 'Attempts'
+                    game,game_over,victory = 'You guessed right!', 'You lost!', 'Well done!'
                 if est_button.collidepoint(event.pos):
                     ALPHABET = ALPHABET_EST
                     word = random.choice(WORDS)
                     ITEMS = ['IT', 'TOIT', 'TRANSPORT']
                     count_language,menu_language,choose_language, remaining_tries = "EST",'Keel','Valige keel', 'Katsed'
+                    game,game_over,victory = "Arvasite õigesti!", "Sa kaotasid!", "Hästi tehtud!"
                 if button.collidepoint(event.pos):
                     menu_running = False
                     topic_selection = True
