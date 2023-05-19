@@ -2,6 +2,9 @@ import pygame
 pygame.init()
 font = pygame.font.SysFont('Arial', 50)
 menu_language, choose_language,remaining_tries  = 'Язык', 'Выберите язык', 'Попытки'
+victory = 'Молодец!'
+game_over = 'Вы проиграли!'
+game = 'Вы угадали!'
 language_surface = font.render(menu_language, True, (0, 0, 0))
 choose_language_surface = font.render(choose_language, True, (0, 0, 0))
 ALPHABET_RUS = ["А", "Б", "В", "Г", "Д", "Е", "Ё", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь", "Э", "Ю", "Я"]
