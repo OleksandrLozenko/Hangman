@@ -295,7 +295,6 @@ while True:
             play()
             draw_settings()
             pygame.display.update()
-
 # Цикл игры
     if game_running:
         # Нарисовать кнопки с положением
@@ -378,18 +377,13 @@ while True:
                         # Определяем выбранный элемент
                         selected_index = (mouse_pos[1] - DROPDOWN_Y) // BUTTON_HEIGHT
                         if 0 <= selected_index < len(ITEMS):
-                            print('Выбран элемент:', ITEMS[selected_index])
                             dropdown_open = False
                             if ITEMS[selected_index] == 'ИТ':
                                 WORDS = WORDS_IT_UPPER[topic] if count_language == 'RUS' else WORDS_IT_UPPER[1] if count_language == 'ENG' else WORDS_IT_UPPER[2]
-                                print(WORDS)
                             if ITEMS[selected_index] == 'ЕДА':
                                 WORDS = WORDS_FOOD_UPPER[topic] if count_language == 'RUS' else WORDS_FOOD_UPPER[1] if count_language == 'ENG' else WORDS_FOOD_UPPER[2]
-                                print(WORDS)
                             if ITEMS[selected_index] == 'ТРАНСПОРТ':
                                 WORDS = WORDS_TRANSPORT_UPPER[topic] if count_language == 'RUS' else WORDS_TRANSPORT_UPPER[1] if count_language == 'ENG' else WORDS_TRANSPORT_UPPER[2]
-                                print(WORDS)
-
                 if button.collidepoint(event.pos):
                     topic_selection = False
                     game_running = True
