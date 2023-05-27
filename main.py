@@ -51,48 +51,61 @@ for row in rows:
         x += button_width + gap # Переходим к следующей кнопке по горизонтали
 
 hang_man_count = 0 # Начальная картинка.
+button_colors = {}  # Словарь для хранения цветов кнопок
 
 def draw_buttons():
-    ''' Функция для отображения кнопок на экране.'''
-    # Проходит по всем кнопкам и рисует их на экране
+    '''Функция для отображения кнопок на экране.'''
     for i, (button_rect, button_text) in enumerate(buttons):
         letter = ALPHABET[i]  # Получаем символ кнопки из алфавита
-        if letter in guessed_letters:
-            if letter in word:
-                pygame.draw.rect(win, GREEN, button_rect)
-            else:
-                pygame.draw.rect(win, RED, button_rect)
+
+        if letter in button_colors:
+            color = button_colors[letter]  # Используем сохраненный цвет кнопки из словаря
         else:
-            pygame.draw.rect(win, WHITE, button_rect)
+            if letter in guessed_letters:
+                if letter in word:
+                    if current_letter == letter:
+                        color = GREEN  # Зеленый цвет для кнопки, если угадана с использованием кнопки с буквой
+                    else:
+                        color = YELLOW  # Желтый цвет для кнопки, если угадана с использованием clue_button
+                else:
+                    color = RED  # Красный цвет для кнопки, если угадана неверная буква
+            else:
+                color = WHITE  # Белый цвет для неактивных кнопок
+        
+        pygame.draw.rect(win, color, button_rect)
+        
         text_surface = font.render(letter, True, BLACK)
         text_rect = text_surface.get_rect(center=button_rect.center)
         win.blit(text_surface, text_rect)
 
 def handle_button_click(pos):
-    ''' Функция для обработки нажатий кнопок на экране.'''
-    global hang_man_count
-    global current_letter, guessed_letters, no_word, remaining_attempts, buttons
+    global hang_man_count, current_letter, guessed_letters, no_word, remaining_attempts, buttons, button_colors
+
+    if clue_button.collidepoint(pos):
+        while True:
+            random_letter = random.choice(ALPHABET)
+            if random_letter not in guessed_letters and random_letter in word:
+                guessed_letters.append(random_letter)
+                break
 
     for i, (button_rect, button_text) in enumerate(buttons):
-        # Если координаты щелчка находятся в пределах кнопки
         if button_rect.collidepoint(pos):
-            current_letter = ALPHABET[i] # Получаем текущую букву, соответствующую этой кнопке
-            if current_letter not in guessed_letters: # Если текущая буква еще не угадана
+            current_letter = ALPHABET[i]
+            if current_letter not in guessed_letters:
                 guessed_letters.append(current_letter)
-                if current_letter not in word: # Если текущая буква не присутствует в загаданном слове
-                    remaining_attempts -= 1 # Уменьшаем количество оставшихся попыток
-                    hang_man_count += 1 # Увеличиваем счетчик картинок
-                    button_text_color = RED # Цвет текста кнопки - красный (неправильная буква)
+                if current_letter not in word:
+                    remaining_attempts -= 1
+                    hang_man_count += 1
+                    if current_letter not in button_colors:
+                        button_colors[current_letter] = RED  # Установка цвета кнопки в красный
                 else:
-                    button_text_color = GREEN # Цвет текста кнопки - зеленый (правильная буква)
-            else:
-                # Буква уже угадана
-                button_text_color = WHITE
-            
-            pygame.draw.rect(win, button_text_color, button_rect)
-            text_surface = font.render(ALPHABET[i], True, BLACK)
-            text_rect = text_surface.get_rect(center=button_rect.center)
-            win.blit(text_surface, text_rect)
+                    if current_letter not in button_colors:
+                        button_colors[current_letter] = GREEN  # Установка цвета кнопки в зеленый
+
+            break
+
+    draw_buttons()
+
 
 # Игровые переменные
 guessed_letters = [] # Угаданные буквы.
@@ -157,7 +170,8 @@ def get_new_word():
             no_word.append(word)
             guessed_letters = [] # Обновляем список угаданых букв
             remaining_attempts = 8 # Попытки
-            hang_man_count = 0 # Вернуть изначальную картинку
+            hang_man_count = 0
+            button_colors.clear() # Вернуть изначальную картинку
             return word
 
 
@@ -253,6 +267,10 @@ def draw_screen():
         win.blit(eng_button_text_img, eng_button_img_rect)
         win.blit(est_button_text_img, est_button_img_rect)
         pygame.display.update()
+def draw_clue_text():
+    font = pygame.font.SysFont(FONT_TEXT, 45)
+    text_2 = font.render(f"Подсказка", True, BLACK)
+    win.blit(text_2, (280, 100))
 
 def play():
     '''Функция отрисовки кнопки "Старт".'''
@@ -303,13 +321,17 @@ while True:
                     ITEMS = ['IT', 'TOIT', 'TRANSPORT']
                     count_language,menu_language,choose_language, remaining_tries,choose_topic,topic_language = "EST",'Keel','Valige keel', 'Katsed',"Vali teema",'Teema'
                     victory =  "Hästi tehtud!"
-                if button.collidepoint(event.pos):
+                if setting_button.collidepoint(event.pos):
+                    menu_running = False
+                    setting_running = True
+                elif button.collidepoint(event.pos):
                     menu_running = False
                     topic_selection = True
                     current_letter = ""
                     guessed_letters = []
                     remaining_attempts = 8
                     hang_man_count = 0
+                    button_colors.clear()
                     word = random.choice(WORDS)
     # Отрисовка всех элементов
             pygame.time.delay(100)
@@ -320,7 +342,6 @@ while True:
             play()
             draw_settings()
             pygame.display.update()
-
     # Игра
     if game_running:
         # Нарисовать кнопки с положением
@@ -334,6 +355,9 @@ while True:
                 pygame.quit()
                 quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if setting_button.collidepoint(event.pos):
+                    game_running = False
+                    setting_running = True
                 pressed_letter = handle_button_click(event.pos)
                 if again_button.collidepoint(event.pos) and remaining_attempts <= 0: # Работает когда нажата кнопка и попыток 0.
                     hide_message = True
@@ -342,6 +366,7 @@ while True:
                     no_word.clear()
                     remaining_attempts = 8
                     hang_man_count = 0
+                    button_colors.clear()
                     word = random.choice(WORDS)
                 if exit_button.collidepoint(event.pos) and remaining_attempts <= 0:
                     game_running = False
@@ -379,14 +404,37 @@ while True:
             draw_used_letters()
             draw_settings()
             draw_topic()
+            if button_color == GREEN:
+                win.blit(clue_button_text_img, clue_button_img_rect)
             pygame.display.update()
+
     # Настройки
     if setting_running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-        draw_settings()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if exit_button.collidepoint(event.pos):
+                    setting_running = False
+                    menu_running = True
+                mouse_pos = pygame.mouse.get_pos()
+                button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+                if button_rect.collidepoint(mouse_pos):
+                # Проверяем, нажата ли кнопка
+                    if button_color == WHITE:
+                        button_color = GREEN
+                    else:
+                        button_color = WHITE
+        
+        win.blit(background_image, (0, 0))
+        win.blit(exit_button_text_img, exit_button_hovered_img_rect)
+        pygame.draw.rect(win, border_color, (button_x - border_width, button_y - border_width,
+                                            button_width + border_width * 2, button_height + border_width * 2))
+        pygame.draw.rect(win, button_color, (button_x, button_y, button_width, button_height))
+        draw_clue_text()
+        draw_screen()
+        pygame.display.update()
     # Тема
     if topic_selection:
         topic = 0
@@ -422,6 +470,7 @@ while True:
                         guessed_letters = []
                         remaining_attempts = 8
                         hang_man_count = 0
+                        button_colors.clear()
 
                     if selected_index is not None:
                         # Если выбранная тема существует, использовать ее
