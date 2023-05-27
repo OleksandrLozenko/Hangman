@@ -43,12 +43,19 @@ exit_button_text_img.blit(exit_button_img, (0, 0))
 exit_button_img_rect = exit_button_img.get_rect(center=exit_button.center)
 exit_button_hovered_img_rect = exit_button_img_rect.inflate(0, 30)
 ###
-setting_button = pygame.Rect(200, 400, 1100, -600)
+setting_button = pygame.Rect(660, 60, 200, 70)
 setting_button_img = pygame.image.load('Images/Settings.png')
 setting_button_text_img = pygame.Surface(setting_button_img.get_size(), pygame.SRCALPHA)
 setting_button_text_img.blit(setting_button_img, (0, 0))
 setting_button_img_rect = setting_button_img.get_rect(center=setting_button.center)
 setting_button_hovered_img_rect = setting_button_img_rect.inflate(0, 30)
+###
+clue_button = pygame.Rect(660, 150, 200, 70)
+clue_button_img = pygame.image.load('Images/Clue.png')
+clue_button_text_img = pygame.Surface(clue_button_img.get_size(), pygame.SRCALPHA)
+clue_button_text_img.blit(clue_button_img, (0, 0))
+clue_button_img_rect = clue_button_img.get_rect(center=clue_button.center)
+clue_button_hovered_img_rect = clue_button_img_rect.inflate(0, 30)
 ###
 BUTTON_WIDTH = 200
 BUTTON_HEIGHT = 40
@@ -69,5 +76,14 @@ dropdown_open = False
 
 # Индекс выбранного элемента
 selected_index = None
+###
+button_color = WHITE
+button_width, button_height = 200, 100
+button_x = 200
+button_y = 100
+border_width = 3
+border_color = BLACK
+button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+
 
 
