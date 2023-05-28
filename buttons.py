@@ -77,10 +77,17 @@ dropdown_open = False
 # Индекс выбранного элемента
 selected_index = None
 ###
-button_color = WHITE
-button_width, button_height = 200, 100
-button_x = 200
-button_y = 100
-border_width = 3
-border_color = BLACK
-button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+button_color1 = pygame.Color(WHITE)
+button_width1, button_height1 = 50, 50
+button_x1, button_y1 = 200, 100
+border_width1 = 3
+border_color1 = pygame.Color(BLACK)
+button_rect1 = pygame.Rect(button_x1, button_y1, button_width1, button_height1)
+
+# Параметры второй кнопки
+button_color2 = pygame.Color(WHITE)
+button_width2, button_height2 = 50, 50
+button_x2, button_y2 = 200, 150 + button_height1 + border_width1  # Положение второй кнопки под первой
+border_width2 = 3
+border_color2 = pygame.Color(BLACK)
+button_rect2 = pygame.Rect(button_x2, button_y2, button_width2, button_height2)
