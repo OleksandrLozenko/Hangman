@@ -84,6 +84,3 @@ button_y = 100
 border_width = 3
 border_color = BLACK
 button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
-
-
-
