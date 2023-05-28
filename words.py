@@ -1,7 +1,7 @@
 import pygame
 pygame.init()
 font = pygame.font.SysFont('Arial', 50)
-menu_language, choose_language,remaining_tries,choose_topic  = 'Язык', 'Выберите язык', 'Попытки','Выберите тему'
+menu_language, choose_language,remaining_tries,choose_topic,topic_language,clue_text  = 'Язык', 'Выберите язык', 'Попытки','Выберите тему','Тема','Подсказка'
 victory = 'Молодец!'
 language_surface = font.render(menu_language, True, (0, 0, 0))
 choose_language_surface = font.render(choose_language, True, (0, 0, 0))
