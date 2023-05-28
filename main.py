@@ -15,103 +15,91 @@ textbox = pygame.Surface((TEXTBOX_WIDTH, TEXTBOX_HEIGHT))
 textbox.fill((200, 200, 200))
 textbox_rect = textbox.get_rect(center=(WIDTH/2, HEIGHT/2 + 100))
 pygame.draw.rect(textbox, WHITE, textbox.get_rect(), 2)
-# Загрузка картинок и присвоение каждой картинке свой ключ.
-hang_man = {0: pygame.image.load('Images/hangman.png'),
-            1: pygame.image.load('Images/hangman1.png'),
-            2: pygame.image.load('Images/hangman2.png'),
-            3: pygame.image.load('Images/hangman3.png'),
-            4: pygame.image.load('Images/hangman4.png'),
-            5: pygame.image.load('Images/hangman5.png'),
-            6 : pygame.image.load('Images/hangman6.png'),
-            7 : pygame.image.load('Images/hangman7.png'),
-            8 : pygame.image.load('Images/hangman8.png')}
-button_width, button_height = 50, 50
-gap = 10  # расстояние между кнопками
-x, y = gap, gap  # начальная позиция кнопок
+cross_image = pygame.image.load("Images/cross.png") # Загрузка картинки 'Крестик'.
+Logo_image = pygame.image.load("Images/Logo.png") # Загрузка картинки 'Логотип'.
+draw_cross = False # Проверка на нажатия кнопки 'Подсказка'.
+hang_man = {i: pygame.image.load(f"Images/hangman{i}.png") for i in range(9)} # Загрузка картинок и присвоение каждой картинке свой ключ.
+###
+ALPHABET = ALPHABET_RUS
+menu_or_game = ' '
+button_width, button_height = 50, 50 # Ширина и висота кнопки.
+gap = 10  # расстояние между кнопками.
+x, y = gap, gap  # начальная позиция кнопок.
 # Создание кнопок из букв алфавита и размещение их в строках по 11 кнопок в каждой.
-rows = [] # Список строк
-current_row = [] # Текущая строка
+rows = [] # Список строк.
+current_row = [] # Текущая строка.
 for letter in ALPHABET:
     current_row.append(letter)
-    if len(current_row) == 11:  # Если текущая строка заполнилась
-        rows.append(current_row)  # Добавляем ее в список строк
-        current_row = []  # Обнуляем текущую строку для следующей
-if current_row: # Если последняя строка не пуста
+    if len(current_row) == 11:  # Если текущая строка заполнилась.
+        rows.append(current_row)  # Добавляем ее в список строк.
+        current_row = []  # Обнуляем текущую строку для следующей.
+if current_row: # Если последняя строка не пуста.
     rows.append(current_row)
-# Создание кнопок на основе строк и их размещение на экране
-buttons = [] # Список кнопок
+# Создание кнопок на основе строк и их размещение на экране.
+buttons = [] # Список кнопок.
 for row in rows:
-    row_width = button_width * len(row) + gap * (len(row) - 1) # Ширина строки
-    x = (WIDTH - row_width) // 2 # Позиция по горизонтали
-    y += button_height + gap # Переходим на следующую строку по вертикали
+    row_width = button_width * len(row) + gap * (len(row) - 1) # Ширина строки.
+    x = (WIDTH - row_width) // 2 # Позиция по горизонтали.
+    y += button_height + gap # Переходим на следующую строку по вертикали.
     for letter in row:
         button_rect = pygame.Rect(x, y, button_width, button_height)
         button_text = font.render(letter, True, BLACK)
         buttons.append((button_rect, button_text))
-        x += button_width + gap # Переходим к следующей кнопке по горизонтали
-
-hang_man_count = 0 # Начальная картинка.
-button_colors = {}  # Словарь для хранения цветов кнопок
+        x += button_width + gap # Переходим к следующей кнопке по горизонтали.
 
 def draw_buttons():
     '''Функция для отображения кнопок на экране.'''
     for i, (button_rect, button_text) in enumerate(buttons):
         letter = ALPHABET[i]  # Получаем символ кнопки из алфавита
-
         if letter in button_colors:
             color = button_colors[letter]  # Используем сохраненный цвет кнопки из словаря
         else:
             if letter in guessed_letters:
                 if letter in word:
                     if current_letter == letter:
-                        color = GREEN  # Зеленый цвет для кнопки, если угадана с использованием кнопки с буквой
+                        color = GREEN  # Зеленый цвет для кнопки, если угадана с использованием кнопки с буквой.
                     else:
-                        color = YELLOW  # Желтый цвет для кнопки, если угадана с использованием clue_button
+                        color = YELLOW  # Желтый цвет для кнопки, если угадана с использованием clue_button.
                 else:
-                    color = RED  # Красный цвет для кнопки, если угадана неверная буква
+                    color = RED  # Красный цвет для кнопки, если угадана неверная буква.
             else:
-                color = WHITE  # Белый цвет для неактивных кнопок
-        
+                color = WHITE  # Белый цвет для неактивных кнопок.
         pygame.draw.rect(win, color, button_rect)
-        
         text_surface = font.render(letter, True, BLACK)
         text_rect = text_surface.get_rect(center=button_rect.center)
         win.blit(text_surface, text_rect)
 
 def handle_button_click(pos):
     global hang_man_count, current_letter, guessed_letters, no_word, remaining_attempts, buttons, button_colors
-
     if clue_button.collidepoint(pos):
         while True:
             random_letter = random.choice(ALPHABET)
             if random_letter not in guessed_letters and random_letter in word:
                 guessed_letters.append(random_letter)
                 break
-
     for i, (button_rect, button_text) in enumerate(buttons):
-        if button_rect.collidepoint(pos):
+        if button_rect.collidepoint(pos): # Если нажата кнопка button_rect.
             current_letter = ALPHABET[i]
             if current_letter not in guessed_letters:
-                guessed_letters.append(current_letter)
+                guessed_letters.append(current_letter) # Добавить буквы в использованые.
                 if current_letter not in word:
-                    remaining_attempts -= 1
-                    hang_man_count += 1
+                    remaining_attempts -= 1 # Изменить кол-во попыток.
+                    hang_man_count += 1 # Изменить счестчик картинок.
                     if current_letter not in button_colors:
-                        button_colors[current_letter] = RED  # Установка цвета кнопки в красный
+                        button_colors[current_letter] = RED  # Установка цвета кнопки в красный.
                 else:
                     if current_letter not in button_colors:
-                        button_colors[current_letter] = GREEN  # Установка цвета кнопки в зеленый
-
+                        button_colors[current_letter] = GREEN  # Установка цвета кнопки в зеленый.
             break
-
     draw_buttons()
-
 
 # Игровые переменные
 guessed_letters = [] # Угаданные буквы.
 current_letter = "" # Текущая выбранная буква.
 no_word = [] # Список слов, которые были использованы.
-remaining_attempts = 8 # Попытки
+remaining_attempts = 8 # Попытки.
+hang_man_count = 0 # Начальная картинка.
+button_colors = {}  # Словарь для хранения цветов кнопок.
 
 def draw_word():
     '''Функция отображает текущее состояние угадываемого слова, рисуя его на экране в окне игры.'''
@@ -164,6 +152,7 @@ def get_new_word():
         win.blit(exit_button_text_img, exit_button_hovered_img_rect)
         pygame.display.update()
         pygame.time.delay(1000)
+
     while True: 
         word = random.choice(WORDS) # Выбор нового слова
         if word not in no_word:
@@ -173,7 +162,6 @@ def get_new_word():
             hang_man_count = 0
             button_colors.clear() # Вернуть изначальную картинку
             return word
-
 
 count_language = 'RUS' # Язык
 # Нарисовать текстовое поле для ввода
@@ -189,6 +177,7 @@ def language():
     pygame.draw.rect(win, BLACK, rect, 2)
     text_2 = font.render(f"{menu_language}: {count_language}", True, BLACK)
     win.blit(text_2, (10, 10))
+
 def draw_topic():
     rect = pygame.Rect(0, 60, 260, 50)
     pygame.draw.rect(win, WHITE, rect)
@@ -197,8 +186,6 @@ def draw_topic():
         topic_text = f"Topic: {ITEMS[selected_index]}"
     else:
         topic_text = f"{topic_language}: {selected_item}"
-    
-
     text_2 = font.render(topic_text, True, BLACK)
     win.blit(text_2, (10, 65))
 
@@ -267,9 +254,13 @@ def draw_screen():
         win.blit(eng_button_text_img, eng_button_img_rect)
         win.blit(est_button_text_img, est_button_img_rect)
         pygame.display.update()
+
+def Logo():
+    win.blit(Logo_image, (40 ,-200))
+
 def draw_clue_text():
     font = pygame.font.SysFont(FONT_TEXT, 45)
-    text_2 = font.render(f"Подсказка", True, BLACK)
+    text_2 = font.render(f"{clue_text}?", True, BLACK)
     win.blit(text_2, (280, 100))
 
 def play():
@@ -287,6 +278,7 @@ setting_running = False
 while True:
     # Меню
     if menu_running:
+        menu_or_game = 'menu'
         for event in pygame.event.get():
             # Анимация кнопок
             if event.type == pygame.MOUSEMOTION:
@@ -309,17 +301,17 @@ while True:
                 if rus_button.collidepoint(event.pos):
                     ALPHABET =  ALPHABET_RUS
                     ITEMS = ['ИТ', 'ЕДА', 'ТРАНСПОРТ']
-                    count_language, menu_language, choose_language, remaining_tries,choose_topic,topic_language = "RUS", 'Язык','Выберите язык', 'Попытки','Выберите тему','Тема'
-                    game_over,victory = 'Вы проиграли!','Молодец!'
+                    count_language, menu_language, choose_language, remaining_tries,choose_topic,topic_language,clue_text = "RUS", 'Язык','Выберите язык', 'Попытки','Выберите тему','Тема','Подсказка'
+                    victory = 'Молодец!'
                 if eng_button.collidepoint(event.pos):
                     ALPHABET = ALPHABET_ENG
                     ITEMS = ['IT','FOOD','TRANSPORT']
-                    count_language,menu_language,choose_language, remaining_tries,choose_topic,topic_language = "ENG",'Language','Choose language', 'Attempts','Choose a theme','Topic'
+                    count_language,menu_language,choose_language, remaining_tries,choose_topic,topic_language,clue_text = "ENG",'Language','Choose language', 'Attempts','Choose a theme','Topic','Clue'
                     victory = 'Well done!'
                 if est_button.collidepoint(event.pos):
                     ALPHABET = ALPHABET_EST
                     ITEMS = ['IT', 'TOIT', 'TRANSPORT']
-                    count_language,menu_language,choose_language, remaining_tries,choose_topic,topic_language = "EST",'Keel','Valige keel', 'Katsed',"Vali teema",'Teema'
+                    count_language,menu_language,choose_language, remaining_tries,choose_topic,topic_language,clue_text = "EST",'Keel','Valige keel', 'Katsed',"Vali teema",'Teema','Viim'
                     victory =  "Hästi tehtud!"
                 if setting_button.collidepoint(event.pos):
                     menu_running = False
@@ -332,18 +324,20 @@ while True:
                     remaining_attempts = 8
                     hang_man_count = 0
                     button_colors.clear()
-                    word = random.choice(WORDS)
     # Отрисовка всех элементов
             pygame.time.delay(100)
             win.blit(background_image, (0, 0))
+            Logo()
             draw_screen()
             choose_your_language()
             language()
             play()
             draw_settings()
             pygame.display.update()
+
     # Игра
     if game_running:
+        menu_or_game = 'game'
         # Нарисовать кнопки с положением
         buttons = []
         for i, letter in enumerate(ALPHABET):
@@ -392,7 +386,6 @@ while True:
         for button_rect, button_text in buttons:
             pygame.draw.rect(win, BLACK, button_rect, 1)
             win.blit(button_text, button_rect)
-        
         win.blit(background_image, (0, 0))
         check_remaining_attempts()
         if remaining_attempts != 0: # Если попыток не равно 0 рисовать эти элементы.
@@ -404,7 +397,7 @@ while True:
             draw_used_letters()
             draw_settings()
             draw_topic()
-            if button_color == GREEN:
+            if draw_cross == True:
                 win.blit(clue_button_text_img, clue_button_img_rect)
             pygame.display.update()
 
@@ -421,23 +414,55 @@ while True:
                 mouse_pos = pygame.mouse.get_pos()
                 button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
                 if button_rect.collidepoint(mouse_pos):
-                # Проверяем, нажата ли кнопка
-                    if button_color == WHITE:
-                        button_color = GREEN
+                    if draw_cross:
+                        draw_cross = False
                     else:
-                        button_color = WHITE
-        
+                        draw_cross = True
+                if again_button.collidepoint(event.pos) and menu_or_game == 'game': # Работает когда нажата кнопка и Выбрано окно game.
+                    setting_running = False
+                    game_running = True
+                    current_letter = ""
+                    guessed_letters = []
+                    no_word.clear()
+                    remaining_attempts = 8
+                    hang_man_count = 0
+                    button_colors.clear()
+                    selected_item = random.choice(ITEMS)
+                    word = random.choice(WORDS)
+                if button.collidepoint(event.pos) and menu_or_game == 'game':
+                    setting_running = False
+                    menu_running = False
+                    game_running = True
+                    print(word)
+
         win.blit(background_image, (0, 0))
         win.blit(exit_button_text_img, exit_button_hovered_img_rect)
         pygame.draw.rect(win, border_color, (button_x - border_width, button_y - border_width,
                                             button_width + border_width * 2, button_height + border_width * 2))
         pygame.draw.rect(win, button_color, (button_x, button_y, button_width, button_height))
+        if menu_or_game == 'game':
+            win.blit(again_button_text_img, again_button_hovered_img_rect)
+            play()
+        if draw_cross: 
+            cross_x = button_x + (button_width - cross_image.get_width()) // 2
+            cross_y = button_y + (button_height - cross_image.get_height()) // 2
+            win.blit(cross_image, (cross_x, cross_y))
         draw_clue_text()
-        draw_screen()
         pygame.display.update()
-    # Тема
+
+
+# Тема
     if topic_selection:
-        topic = 0
+        topic = 0 
+        if count_language == 'RUS':
+            WORDS = WORDS_FOOD_UPPER[topic] if selected_index == 1 else WORDS_IT_UPPER[topic] if selected_index == 0 else WORDS_TRANSPORT_UPPER[topic]
+        elif count_language == 'ENG':
+            WORDS = WORDS_FOOD_UPPER[1] if selected_index == 1 else WORDS_IT_UPPER[1] if selected_index == 0 else WORDS_TRANSPORT_UPPER[1]
+        elif count_language == 'EST':
+            WORDS = WORDS_FOOD_UPPER[2] if selected_index == 1 else WORDS_IT_UPPER[2] if selected_index == 0 else WORDS_TRANSPORT_UPPER[2]
+
+        ALPHABET = ALPHABET_RUS if count_language == 'RUS' else ALPHABET_ENG if count_language == 'ENG' else ALPHABET_EST
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -458,9 +483,9 @@ while True:
                             dropdown_open = False  # Закрытие выпадающего списка
                             if ITEMS[selected_index] == 'ИТ':
                                 WORDS = WORDS_IT_UPPER[topic] if count_language == 'RUS' else WORDS_IT_UPPER[1] if count_language == 'ENG' else WORDS_IT_UPPER[2]
-                            if ITEMS[selected_index] == 'ЕДА':
+                            elif ITEMS[selected_index] == 'ЕДА':
                                 WORDS = WORDS_FOOD_UPPER[topic] if count_language == 'RUS' else WORDS_FOOD_UPPER[1] if count_language == 'ENG' else WORDS_FOOD_UPPER[2]
-                            if ITEMS[selected_index] == 'ТРАНСПОРТ':
+                            elif ITEMS[selected_index] == 'ТРАНСПОРТ':
                                 WORDS = WORDS_TRANSPORT_UPPER[topic] if count_language == 'RUS' else WORDS_TRANSPORT_UPPER[1] if count_language == 'ENG' else WORDS_TRANSPORT_UPPER[2]
 
                     if button.collidepoint(event.pos):
@@ -492,7 +517,6 @@ while True:
                         elif selected_item == 'ТРАНСПОРТ':
                             WORDS = WORDS_TRANSPORT_UPPER[topic] if count_language == 'RUS' else WORDS_TRANSPORT_UPPER[1] if count_language == 'ENG' else WORDS_TRANSPORT_UPPER[2]
                         word = random.choice(WORDS)
-
 
         win.blit(background_image, (0, 0))
         draw_button()
