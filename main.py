@@ -17,7 +17,7 @@ textbox_rect = textbox.get_rect(center=(WIDTH/2, HEIGHT/2 + 100))
 pygame.draw.rect(textbox, WHITE, textbox.get_rect(), 2)
 cross_image = pygame.image.load("Images/cross.png") # Загрузка картинки 'Крестик'.
 Logo_image = pygame.image.load("Images/Logo.png") # Загрузка картинки 'Логотип'.
-draw_cross = False # Проверка на нажатия кнопки 'Подсказка'.
+draw_cross = {'button1': False, 'button2': False}
 hang_man = {i: pygame.image.load(f"Images/hangman{i}.png") for i in range(9)} # Загрузка картинок и присвоение каждой картинке свой ключ.
 ###
 ALPHABET = ALPHABET_RUS
@@ -397,7 +397,7 @@ while True:
             draw_used_letters()
             draw_settings()
             draw_topic()
-            if draw_cross == True:
+            if draw_cross['button1'] == True:
                 win.blit(clue_button_text_img, clue_button_img_rect)
             pygame.display.update()
 
@@ -408,16 +408,14 @@ while True:
                 pygame.quit()
                 quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if button_rect1.collidepoint(mouse_pos):
+                    draw_cross['button1'] = not draw_cross['button1']  # Инвертируем состояние рисования крестика на первой кнопке
+                elif button_rect2.collidepoint(mouse_pos):
+                    draw_cross['button2'] = not draw_cross['button2']  # Инвертируем состояние рисования крестика на второй кнопке
                 if exit_button.collidepoint(event.pos):
                     setting_running = False
                     menu_running = True
-                mouse_pos = pygame.mouse.get_pos()
-                button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
-                if button_rect.collidepoint(mouse_pos):
-                    if draw_cross:
-                        draw_cross = False
-                    else:
-                        draw_cross = True
                 if again_button.collidepoint(event.pos) and menu_or_game == 'game': # Работает когда нажата кнопка и Выбрано окно game.
                     setting_running = False
                     game_running = True
@@ -437,16 +435,28 @@ while True:
 
         win.blit(background_image, (0, 0))
         win.blit(exit_button_text_img, exit_button_hovered_img_rect)
-        pygame.draw.rect(win, border_color, (button_x - border_width, button_y - border_width,
-                                            button_width + border_width * 2, button_height + border_width * 2))
-        pygame.draw.rect(win, button_color, (button_x, button_y, button_width, button_height))
+        pygame.draw.rect(win, border_color1, (button_x1 - border_width1, button_y1 - border_width1,
+                                            button_width1 + border_width1 * 2, button_height1 + border_width1 * 2))
+        pygame.draw.rect(win, button_color1, (button_x1, button_y1, button_width1, button_height1))
+
+        # Отрисовка второй кнопки
+        pygame.draw.rect(win, border_color2, (button_x2 - border_width2, button_y2 - border_width2,
+                                            button_width2 + border_width2 * 2, button_height2 + border_width2 * 2))
+        pygame.draw.rect(win, button_color2, (button_x2, button_y2, button_width2, button_height2))
+
         if menu_or_game == 'game':
             win.blit(again_button_text_img, again_button_hovered_img_rect)
             play()
-        if draw_cross: 
-            cross_x = button_x + (button_width - cross_image.get_width()) // 2
-            cross_y = button_y + (button_height - cross_image.get_height()) // 2
-            win.blit(cross_image, (cross_x, cross_y))
+        for button_id, is_drawn in draw_cross.items():
+            if is_drawn:
+                if button_id == 'button1':
+                    cross_x = button_x1 + (button_width1 - cross_image.get_width()) // 2
+                    cross_y = button_y1 + (button_height1 - cross_image.get_height()) // 2
+                elif button_id == 'button2':
+                    cross_x = button_x2 + (button_width2 - cross_image.get_width()) // 2
+                    cross_y = button_y2 + (button_height2 - cross_image.get_height()) // 2
+                win.blit(cross_image, (cross_x, cross_y))
+
         draw_clue_text()
         pygame.display.update()
 
