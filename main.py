@@ -4,9 +4,40 @@ from settings import *
 from words import *
 from buttons import *
 
+'''Виселица 2.0
+Игра «Виселица» реализованая с помощью pygame.
+
+Виселица - игра, в которой вам нужно угадывать различные слова на заданные темы.
+
+Ход игры:
+Вы выбираете язык и тему.
+Получаете количество букв в слове.
+Угадываете слово по буквам.
+Если ошибетесь 8 раз - проиграете.
+Удачной игры!
+
+История версий:
+v0.1 - угадывание слова в терминале.
+v0.2 - добавлена графическая оболочка и словарь RUS.
+v0.3 - словарь и настройки выделены в отдельный файл, доработан интерфейс.
+v0.4 - добавлены счетчики, игра зациклена.
+v0.5 - реализован выбор языка, добавлены словари ENG, EST (тема - компьютерные термины).
+
+v1.0 - реализовано управление мышкой, добавления доска с использованными буквы.
+v1.5 - добавлены тематические словари с возможностью их выбора.
+v1.6 - реализована графику классической игры "Виселица".
+v1.7 - добавлена подсказка.
+v1.8 - Обновлены все файлы.
+v2.0 - Полноценная игра.
+
+Перед запуском программы нужно установить библиотеки:
+pygame - pip install pygame;
+
+OLEKSANDR LOZENKO  - https://github.com/OleksandrLozenko'''
+
 pygame.init()
 win = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Виселица 2.0")
+pygame.display.set_caption("Виселица 2.0 + Update")
 background_image = pygame.image.load("Images/background.png")
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 ###
@@ -179,13 +210,14 @@ def language():
     win.blit(text_2, (10, 10))
 
 def draw_topic():
+    ''''Функция для отрисовки текущей темы'''
     rect = pygame.Rect(0, 60, 260, 50)
     pygame.draw.rect(win, WHITE, rect)
     pygame.draw.rect(win, BLACK, rect, 2)
     if selected_index is not None:
-        topic_text = f"Topic: {ITEMS[selected_index]}"
+        topic_text = f"Topic: {ITEMS[selected_index]}" # если тема была выбранна игроком.
     else:
-        topic_text = f"{topic_language}: {selected_item}"
+        topic_text = f"{topic_language}: {selected_item}" # Если тема была выбранна рандомно.
     text_2 = font.render(topic_text, True, BLACK)
     win.blit(text_2, (10, 65))
 
@@ -256,9 +288,11 @@ def draw_screen():
         pygame.display.update()
 
 def Logo():
+    '''Функция для отрисовки Логотипа'''
     win.blit(Logo_image, (40 ,-200))
 
 def draw_clue_text():
+    '''Функция для отрисовки сообщения "Подсказка"'''
     font = pygame.font.SysFont(FONT_TEXT, 45)
     text_2 = font.render(f"{clue_text}?", True, BLACK)
     win.blit(text_2, (280, 100))
@@ -410,13 +444,14 @@ while True:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if button_rect1.collidepoint(mouse_pos):
-                    draw_cross['button1'] = not draw_cross['button1']  # Инвертируем состояние рисования крестика на первой кнопке
+                    draw_cross['button1'] = not draw_cross['button1']  # Инвертируем рисования крестика на первой кнопке
                 elif button_rect2.collidepoint(mouse_pos):
-                    draw_cross['button2'] = not draw_cross['button2']  # Инвертируем состояние рисования крестика на второй кнопке
+                    draw_cross['button2'] = not draw_cross['button2']  # Инвертируем рисования крестика на второй кнопке
                 if exit_button.collidepoint(event.pos):
                     setting_running = False
                     menu_running = True
-                if again_button.collidepoint(event.pos) and menu_or_game == 'game': # Работает когда нажата кнопка и Выбрано окно game.
+                # Работает когда нажата кнопка и Выбрано окно game.
+                if again_button.collidepoint(event.pos) and menu_or_game == 'game': 
                     setting_running = False
                     game_running = True
                     current_letter = ""
@@ -435,6 +470,7 @@ while True:
 
         win.blit(background_image, (0, 0))
         win.blit(exit_button_text_img, exit_button_hovered_img_rect)
+        # Отрисовка первой кнопки
         pygame.draw.rect(win, border_color1, (button_x1 - border_width1, button_y1 - border_width1,
                                             button_width1 + border_width1 * 2, button_height1 + border_width1 * 2))
         pygame.draw.rect(win, button_color1, (button_x1, button_y1, button_width1, button_height1))
@@ -448,7 +484,7 @@ while True:
             win.blit(again_button_text_img, again_button_hovered_img_rect)
             play()
         for button_id, is_drawn in draw_cross.items():
-            if is_drawn:
+            if is_drawn: # Рассположение крестика.
                 if button_id == 'button1':
                     cross_x = button_x1 + (button_width1 - cross_image.get_width()) // 2
                     cross_y = button_y1 + (button_height1 - cross_image.get_height()) // 2
