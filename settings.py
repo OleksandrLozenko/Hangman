@@ -4,7 +4,7 @@ from words import *
 pygame.init()
 WIDTH = 800
 HEIGHT = 600
-# Допустимые символы.
+# Способ шифрования слова.
 ENCRYPTION = "_" + ' '
 
 # Шрифт и размер.
