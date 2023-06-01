@@ -39,7 +39,7 @@ est_button_hovered_img_rect = est_button_img_rect.inflate(0, 30)
 
 ###
 
-again_button = pygame.Rect(400, 400, 200, 70)
+again_button = pygame.Rect(420, 400, 200, 70)
 again_button_img = pygame.image.load('Images/Again.png')
 again_button_text_img = pygame.Surface(again_button_img.get_size(), pygame.SRCALPHA)
 again_button_text_img.blit(again_button_img, (0, 0))
@@ -48,7 +48,7 @@ again_button_hovered_img_rect = again_button_img_rect.inflate(0, 30)
 
 ###
 
-exit_button = pygame.Rect(200, 400, 200, 70)
+exit_button = pygame.Rect(180, 400, 200, 70)
 exit_button_img = pygame.image.load('Images/Exit_to_menu.png')
 exit_button_text_img = pygame.Surface(exit_button_img.get_size(), pygame.SRCALPHA)
 exit_button_text_img.blit(exit_button_img, (0, 0))
@@ -86,7 +86,7 @@ BUTTON_Y = (HEIGHT - BUTTON_HEIGHT - DROPDOWN_HEIGHT) // 2
 # Определение координат выпадающего списка
 DROPDOWN_X = BUTTON_X
 DROPDOWN_Y = BUTTON_Y + BUTTON_HEIGHT
-ITEMS = ['ИТ', 'ЕДА', 'ТРАНСПОРТ']
+ITEMS = list(WORDS['RUS'].keys())
 
 # Флаг для отслеживания открытия/закрытия выпадающего списка
 dropdown_open = False
