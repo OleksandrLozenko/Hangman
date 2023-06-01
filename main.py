@@ -9,7 +9,7 @@ from buttons import *
 pygame.init()
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Виселица 2.0 + Update")
-background_image = pygame.image.load("Images/background.png")
+background_image = pygame.image.load("Images/background.png") # Загрузка фона
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 ###
 font = pygame.font.SysFont(FONT_TEXT, FONT_SIZE)
@@ -22,13 +22,13 @@ Logo_image = pygame.image.load("Images/Logo.png") # Загрузка карти�
 draw_cross = {'button1': False, 'button2': False}
 hang_man = {i: pygame.image.load(f"Images/hangman{i}.png") for i in range(9)} # Загрузка картинок и присвоение каждой картинке свой ключ.
 ###
-ALPHABET = ALPHABET_RUS
-selected_index == None
-isAll = False
-menu_or_game = ' '
+ALPHABET = ALPHABET_RUS # Буквы по умолчанию Русские
+selected_index == None # По умолчанию индекс = None
+isAll = False # Рандом отключен
+menu_or_game = ' ' # Переманная которая изменяется в зависимости от экрана.
 button_width, button_height = 50, 50 # Ширина и висота кнопки.
 gap = 10  # расстояние между кнопками.
-x, y = gap, gap  # начальная позиция кнопок.
+x, y = gap, gap  # Начальная позиция кнопок.
 # Создание кнопок из букв алфавита и размещение их в строках по 11 кнопок в каждой.
 rows = [] # Список строк.
 current_row = [] # Текущая строка.
@@ -161,13 +161,12 @@ def get_new_word():
         if isAll:
             selected_index = random.randint(0,len(WORDS[count_language])-1)
         word = random.choice(WORDS[count_language][ITEMS[selected_index]])
-#        word = random.choice(WORDS) # Выбор нового слова
         if word not in no_word:
             no_word.append(word)
-            guessed_letters = [] # Обновляем список угаданых букв
-            remaining_attempts = 8 # Попытки
-            hang_man_count = 0
-            button_colors.clear() # Вернуть изначальную картинку
+            guessed_letters = [] # Обновляем список угаданых букв.
+            remaining_attempts = 8 # Попытки.
+            hang_man_count = 0 # Вернуть изначальную картинку человечка.
+            button_colors.clear() # Вернуть изначальную картинку.
             return word
 
 count_language = 'RUS' # Язык
@@ -191,7 +190,7 @@ def draw_topic():
     pygame.draw.rect(win, WHITE, rect)
     pygame.draw.rect(win, BLACK, rect, 2)
     if selected_index is not None:
-        topic_text = f"Topic: {ITEMS[selected_index]}" # если тема была выбранна игроком.
+        topic_text = f"Topic: {ITEMS[selected_index]}" # Если тема была выбранна игроком.
     else:
         topic_text = f"{topic_language}: {selected_item}" # Если тема была выбранна рандомно.
     text_2 = font.render(topic_text, True, BLACK)
@@ -268,6 +267,7 @@ def Logo():
     win.blit(Logo_image, (40 ,-200))
 
 def draw_remaining():
+    ''''Функция для отрисовки сообщения "Кол-во попыток"'''
     font = pygame.font.SysFont(FONT_TEXT, 45)
     text_2 = font.render(f"{quantity}", True, BLACK)
     win.blit(text_2, (280, 200))
@@ -283,6 +283,7 @@ def play():
     win.blit(button_img, button_img_rect)
 
 def remaining_attempts_text():
+    '''Функция для для отрисовки блока с кол-во попыток.'''
     rect = pygame.Rect(680, 0, 60, 50)
     pygame.draw.rect(win, WHITE, rect)
     pygame.draw.rect(win, BLACK, rect, 2)
@@ -418,7 +419,7 @@ while True:
             win.blit(button_text, button_rect)
         win.blit(background_image, (0, 0))
         check_remaining_attempts()
-        if remaining_attempts != 0: # Если попыток не равно 0 рисовать эти элементы.
+        if remaining_attempts != 0: # Если попыток не равно 0 рисовать  все эти элементы.
             win.blit(hang_man[hang_man_count], (200 , 50))
             language()
     #       draw_textbox()
@@ -427,10 +428,10 @@ while True:
             draw_used_letters()
             draw_settings()
             draw_topic()
-            if draw_cross['button1'] == True:
-                win.blit(clue_button_text_img, clue_button_img_rect)
-            if draw_cross['button2'] == True:
-                remaining_attempts_text()
+            if draw_cross['button1'] == True: # Если крестик на первой кнопке.
+                win.blit(clue_button_text_img, clue_button_img_rect) #Использовать отровку кнопки clue_button
+            if draw_cross['button2'] == True: # Если крестик на второй кнопке.
+                remaining_attempts_text() #Использовать функцию для нарисования блока
             pygame.display.update()
 
     # Настройки
@@ -455,7 +456,7 @@ while True:
                     game_running = False
                     menu_running = True
                 # Работает когда нажата кнопка и Выбрано окно game.
-                if again_button.collidepoint(event.pos) and menu_or_game == 'game': 
+                if again_button.collidepoint(event.pos) and menu_or_game == 'game': # Обновить все данные
                     setting_running = False
                     game_running = True
                     current_letter = ""
@@ -526,21 +527,21 @@ while True:
                         if 0 <= selected_index < len(ITEMS):
                             dropdown_open = False  # Закрытие выпадающего списка
                             word = random.choice(WORDS[count_language][ITEMS[selected_index]])
-                    if button.collidepoint(event.pos):
+                    if button.collidepoint(event.pos): # Обновления данных
                         topic_selection = False
                         game_running = True
                         current_letter = ""
                         guessed_letters = []
-                        remaining_attempts = 8
+                        remaining_attempts = 8 
                         hang_man_count = 0
                         button_colors.clear()
 
-                    if selected_index is not None:
+                    if selected_index is not None: 
                         word = random.choice(WORDS[count_language][ITEMS[selected_index]])
                     else:
                         # Если выбранная тема не существует, выбрать случайную тему
-                        selected_item = random.choice(ITEMS)
-                        isAll = True
+                        selected_item = random.choice(ITEMS) # Выюрать рандомный элемент из ITEMS
+                        isAll = True # Проверка на рандом
                         word = random.choice(WORDS[count_language][selected_item])
 
 
