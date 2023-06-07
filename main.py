@@ -22,6 +22,7 @@ Logo_image = pygame.image.load("Images/Logo.png") # Загрузка карти�
 draw_cross = {'button1': False, 'button2': False}
 hang_man = {i: pygame.image.load(f"Images/hangman{i}.png") for i in range(9)} # Загрузка картинок и присвоение каждой картинке свой ключ.
 ###
+clue_count = 1
 ALPHABET = ALPHABET_RUS # Буквы по умолчанию Русские
 selected_index == None # По умолчанию индекс = None
 isAll = False # Рандом отключен
@@ -74,28 +75,30 @@ def draw_buttons():
         win.blit(text_surface, text_rect)
 
 def handle_button_click(pos):
-    global hang_man_count, current_letter, guessed_letters, no_word, remaining_attempts, buttons, button_colors
+    global hang_man_count, current_letter, guessed_letters, no_word, remaining_attempts, buttons, button_colors, clue_count
     if clue_button.collidepoint(pos):
         while True:
             random_letter = random.choice(ALPHABET)
-            if random_letter not in guessed_letters and random_letter in word:
+            if random_letter not in guessed_letters and random_letter in word and clue_count == 1:
                 guessed_letters.append(random_letter)
+                clue_count = 0
                 break
-    for i, (button_rect, button_text) in enumerate(buttons):
-        if button_rect.collidepoint(pos): # Если нажата кнопка button_rect.
-            current_letter = ALPHABET[i]
-            if current_letter not in guessed_letters:
-                guessed_letters.append(current_letter) # Добавить буквы в использованые.
-                if current_letter not in word:
-                    remaining_attempts -= 1 # Изменить кол-во попыток.
-                    hang_man_count += 1 # Изменить счестчик картинок.
-                    if current_letter not in button_colors:
-                        button_colors[current_letter] = RED  # Установка цвета кнопки в красный.
-                else:
-                    if current_letter not in button_colors:
-                        button_colors[current_letter] = GREEN  # Установка цвета кнопки в зеленый.
-            break
-    draw_buttons()
+    else:
+        for i, (button_rect, button_text) in enumerate(buttons):
+            if button_rect.collidepoint(pos): # Если нажата кнопка button_rect.
+                current_letter = ALPHABET[i]
+                if current_letter not in guessed_letters:
+                    guessed_letters.append(current_letter) # Добавить буквы в использованые.
+                    if current_letter not in word:
+                        remaining_attempts -= 1 # Изменить кол-во попыток.
+                        hang_man_count += 1 # Изменить счестчик картинок.
+                        if current_letter not in button_colors:
+                            button_colors[current_letter] = RED  # Установка цвета кнопки в красный.
+                    else:
+                        if current_letter not in button_colors:
+                            button_colors[current_letter] = GREEN  # Установка цвета кнопки в зеленый.
+                break
+        draw_buttons()
 
 # Игровые переменные
 guessed_letters = [] # Угаданные буквы.
@@ -140,9 +143,9 @@ def draw_word():
 
 def get_new_word():
     '''Функция для получения нового слова.'''
-    global word, guessed_letters, remaining_attempts, no_word, hang_man_count,hide_message, selected_index, isAll
+    global word, guessed_letters, remaining_attempts, no_word, hang_man_count,hide_message, selected_index, isAll, clue_count
     hide_message = False
-    if len(no_word) == len(WORDS) and not hide_message: # Если длина использованных и слова совпадают сгенерировать новое слово
+    if len(no_word) == len(WORDS) and not hide_message and not all(letter in guessed_letters for letter in word): # Если длина использованных и слова совпадают сгенерировать новое слово
         message_surface = pygame.Surface((300, 100)) # Размеры
         message_surface.fill(WHITE)
         message_rect = message_surface.get_rect(center=(WIDTH/2, HEIGHT/2))
@@ -167,6 +170,7 @@ def get_new_word():
             remaining_attempts = 8 # Попытки.
             hang_man_count = 0 # Вернуть изначальную картинку человечка.
             button_colors.clear() # Вернуть изначальную картинку.
+            clue_count = 1
             return word
 
 count_language = 'RUS' # Язык
@@ -190,7 +194,7 @@ def draw_topic():
     pygame.draw.rect(win, WHITE, rect)
     pygame.draw.rect(win, BLACK, rect, 2)
     if selected_index is not None:
-        topic_text = f"Topic: {ITEMS[selected_index]}" # Если тема была выбранна игроком.
+        topic_text = f"{topic_language}: {ITEMS[selected_index]}" # Если тема была выбранна игроком.
     else:
         topic_text = f"{topic_language}: {selected_item}" # Если тема была выбранна рандомно.
     text_2 = font.render(topic_text, True, BLACK)
@@ -351,6 +355,7 @@ while True:
                     remaining_attempts = 8
                     hang_man_count = 0
                     button_colors.clear()
+                    clue_count = 1
     # Отрисовка всех элементов
             pygame.time.delay(100)
             win.blit(background_image, (0, 0))
@@ -388,6 +393,7 @@ while True:
                     remaining_attempts = 8
                     hang_man_count = 0
                     button_colors.clear()
+                    clue_count = 1
                     if isAll == False:
                         word = random.choice(WORDS[count_language][ITEMS[selected_index]])
                     else:
@@ -428,7 +434,7 @@ while True:
             draw_used_letters()
             draw_settings()
             draw_topic()
-            if draw_cross['button1'] == True: # Если крестик на первой кнопке.
+            if draw_cross['button1'] == True and clue_count == 1: # Если крестик на первой кнопке.
                 win.blit(clue_button_text_img, clue_button_img_rect) #Использовать отровку кнопки clue_button
             if draw_cross['button2'] == True: # Если крестик на второй кнопке.
                 remaining_attempts_text() #Использовать функцию для нарисования блока
@@ -527,6 +533,7 @@ while True:
                         if 0 <= selected_index < len(ITEMS):
                             dropdown_open = False  # Закрытие выпадающего списка
                             word = random.choice(WORDS[count_language][ITEMS[selected_index]])
+                            isAll = False
                     if button.collidepoint(event.pos): # Обновления данных
                         topic_selection = False
                         game_running = True
@@ -538,6 +545,7 @@ while True:
 
                     if selected_index is not None: 
                         word = random.choice(WORDS[count_language][ITEMS[selected_index]])
+                        isAll = False
                     else:
                         # Если выбранная тема не существует, выбрать случайную тему
                         selected_item = random.choice(ITEMS) # Выюрать рандомный элемент из ITEMS
